@@ -18,12 +18,11 @@ router.post('/case/inbound', async function(req, res, next) {
 
 router.post('/case/outbound', async function(req, res, next) {
   
-    console.log("Got case: " + JSON.stringify(req.body));
-    console.log("Got the case info....sending it to Salesforce");
-  
+    console.log("Got case update from Salesforce: " + JSON.stringify(req.body));
+    console.log("Got the case info....adding it to the topic");
+
     producer.produceMessage(req.body, process.env.SF_KAFKA_TOPIC)
-      .then(res.send(200));
-  
-  });
+        .then(res.send(200));
+});
 
 module.exports = router;
