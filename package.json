@@ -12,7 +12,7 @@
   "dependencies": {
     "faye": "^1.2.4",
     "fs": "0.0.1-security",
-    "nforce": "^1.10.2",
+    "jsforce": "^1.8.4",
     "no-kafka": "^3.4.3"
   }
 }
