@@ -1,5 +1,5 @@
 //Yer standard includes. Nforce for SF Auth, Faye for cometD, no-kafka for yes-kafka, and fs for a thing.
-const nforce = require('nforce');
+const jsforce = require('jsforce');
 const fs = require('fs');
 const Kafka = require('no-kafka');
 const faye = require('faye');
