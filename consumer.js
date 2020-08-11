@@ -37,8 +37,9 @@ const dataHandler = function (messageSet, topic, partition) {
 };
 
 return consumer.init().then(() => {
-    console.log('Consumer Initiated');
+    console.log('Consumer initiated');
 
-    consumer.subscribe(process.env.KAFKA_TOPIC, dataHandler);
+    consumer.subscribe(`${process.env.KAFKA_PREFIX}${process.env.KAFKA_TOPIC}`, dataHandler);
 
+    console.log('Consumer subscribed');
 });
