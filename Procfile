@@ -1,1 +1,2 @@
-worker: node app.js
+producer: node producer.js
+consumer: node consumer.js
