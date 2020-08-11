@@ -17,10 +17,10 @@ const producer = new Kafka.Producer({
 
 const caseObj = {
     'CaseOrigin__c': 'Kafka Producer',
-    'Description__c': 'I have a question about a new product that you recently announced',
-    'Priority__c': 'High',
+    'Description__c': 'I can\'t seem to log in to the portal',
+    'Priority__c': 'Medium',
     'Status__c': 'New',
-    'Subject__c': 'New product question.'
+    'Subject__c': 'Unable to connect.'
 };
 
 return producer.init().then(() => {
