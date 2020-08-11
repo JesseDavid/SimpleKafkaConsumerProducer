@@ -1,0 +1,18 @@
+{
+  "name": "simple_kafka_producer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "jessedavid",
+  "license": "ISC",
+  "dependencies": {
+    "faye": "^1.2.4",
+    "fs": "0.0.1-security",
+    "nforce": "^1.10.2",
+    "no-kafka": "^3.4.3"
+  }
+}
