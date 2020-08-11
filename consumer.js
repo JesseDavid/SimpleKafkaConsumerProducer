@@ -9,7 +9,9 @@ const { time } = require('console');
 fs.writeFileSync('./client.crt', process.env.KAFKA_CLIENT_CERT);
 fs.writeFileSync('./client.key', process.env.KAFKA_CLIENT_CERT_KEY);
 
-//create the Kafka producer for great justice later
+console.log('Starting consumer initialization');
+
+//Kafka Consumer
 const consumer = new Kafka.SimpleConsumer({
     connectionString: process.env.KAFKA_URL,
     ssl: {
@@ -27,7 +29,7 @@ const consumer = new Kafka.SimpleConsumer({
 //   mode: 'single',
 // });
 
-var dataHandler = function (messageSet, topic, partition) {
+const dataHandler = function (messageSet, topic, partition) {
     messageSet.forEach(function (m) {
         console.log('Message Received:');
         console.log(topic, partition, m.offset, m.message.value.toString('utf8'));
