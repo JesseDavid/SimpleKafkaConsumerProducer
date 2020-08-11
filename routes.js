@@ -11,7 +11,8 @@ router.post('/case', async function(req, res, next) {
   console.log("Got case: " + JSON.stringify(req.body));
   console.log("Got the case info....sending it to Salesforce");
 
-  producer.produceMessage(req.body);
+  producer.produceMessage(req.body)
+    .then(res.send(200));
 
 });
 

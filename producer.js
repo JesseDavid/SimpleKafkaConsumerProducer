@@ -24,14 +24,15 @@ const refCaseObj = {
 };
 
 const produceMessage = (caseObj) => producer.send({
-    topic:`${process.env.KAFKA_PREFIX}${process.env.KAFKA_TOPIC}`,
-    partition:0,
-    message:{
-        value: JSON.stringify(caseObj)
-    },
-    }).then((result) => {
+            topic:`${process.env.KAFKA_PREFIX}${process.env.KAFKA_TOPIC}`,
+            partition:0,
+            message:{
+                value: JSON.stringify(caseObj)
+            },
+        })
+    .then((result) => {
         console.log(`Message sent: ${JSON.stringify(caseObj)}`);
-        console.log(result);
+        return result;
 });
 
 producer.init().then(() => {
