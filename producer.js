@@ -23,20 +23,22 @@ const refCaseObj = {
     'Subject__c': 'Unable to connect.'
 };
 
-const produceMessage = ((caseObj, topic) => {
-        const topicSuffix = topic || process.env.KAFKA_TOPIC;
-        producer.send({
+const produceMessage = (caseObj) => {
+    const topicSuffix = topic || process.env.KAFKA_TOPIC;
+    
+    producer
+        .send({
             topic:`${process.env.KAFKA_PREFIX}${topicSuffix}`,
             partition:0,
             message:{
                 value: JSON.stringify(caseObj)
             },
+            })
+        .then((result) => {
+            console.log(`Message sent: ${JSON.stringify(caseObj)}`);
+            console.log(result);
         });
-    })
-    .then((result) => {
-        console.log(`Message sent: ${JSON.stringify(caseObj)}`);
-        return result;
-});
+};
 
 producer.init().then(() => {
     console.log('Producer Initiated');
