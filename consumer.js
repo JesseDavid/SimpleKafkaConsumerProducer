@@ -2,8 +2,6 @@
 const jsforce = require('jsforce');
 const fs = require('fs');
 const Kafka = require('no-kafka');
-const faye = require('faye');
-const { time } = require('console');
 
 //Kafka setup below
 fs.writeFileSync('./client.crt', process.env.KAFKA_CLIENT_CERT);

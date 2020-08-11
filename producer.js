@@ -1,9 +1,6 @@
 //Yer standard includes. Nforce for SF Auth, Faye for cometD, no-kafka for yes-kafka, and fs for a thing.
-const nforce = require('nforce');
 const fs = require('fs');
 const Kafka = require('no-kafka');
-const faye = require('faye');
-const { time } = require('console');
 
 //This is the fs thing. no-kafka likes its certs in files.
 fs.writeFileSync('./client.crt', process.env.KAFKA_CLIENT_CERT);
