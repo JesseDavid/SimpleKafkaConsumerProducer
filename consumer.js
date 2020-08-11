@@ -5,7 +5,7 @@ const Kafka = require('no-kafka');
 const faye = require('faye');
 const { time } = require('console');
 
-//This is the fs thing. no-kafka likes its certs in files.
+//Kafka setup below
 fs.writeFileSync('./client.crt', process.env.KAFKA_CLIENT_CERT);
 fs.writeFileSync('./client.key', process.env.KAFKA_CLIENT_CERT_KEY);
 
@@ -20,22 +20,41 @@ const consumer = new Kafka.SimpleConsumer({
     }
 });
   
-//nforce's authentication to Salesforce org
-// const org = nforce.createConnection({
-//   clientId: process.env.CLIENTID,
-//   clientSecret: process.env.CLIENTSECRET,
-//   redirectUri: 'http://localhost:3000/oauth/_callback',
-//   environment: process.env.ENVIRONMENT,
-//   mode: 'single',
-// });
+//Salesforce auth info here
+const username = process.env.SF_API_USERNAME;
+const password = process.env.SF_API_PASSWORD;
+const conn = new jsforce.Connection({
+    loginUrl : process.env.SF_LOGIN_URL
+});
 
-const dataHandler = function (messageSet, topic, partition) {
-    messageSet.forEach(function (m) {
-        console.log('Message Received:');
-        console.log(topic, partition, m.offset, m.message.value.toString('utf8'));
+/// connect to the SF org
+console.log('Authenticating with Service Cloud...');
+conn.login(username, password, function(err, res) {
+    if (err) {
+        return console.error(err);
+    }
+    console.log(`\nAuthenticated with Service Cloud: ${res}`);
+});
+
+const sendPlatEvent = (payload) => {
+    console.log(`Sending ${payload} to service cloud`);
+    conn.sobject('Case_Event__e').create(payload, (err,ret) => {
+        if (err || !ret.success) { return console.error(err, ret); }
+        console.log("Created record id : " + ret.id);
     });
 };
 
+// when we see a case kafka message...send it on down the line
+const dataHandler = (messageSet, topic, partition) => {
+    messageSet.forEach(function (m) {
+        console.log('Message Received:');
+        console.log(topic, partition, m.offset, m.message.value.toString('utf8'));
+        sendPlatEvent(m.message.value);
+
+    });
+};
+
+// listen to kafka
 return consumer.init().then(() => {
     console.log('Consumer initiated');
 
