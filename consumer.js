@@ -33,22 +33,15 @@ conn.login(username, password, function(err, res) {
     }
     console.log(`\nAuthenticated with Service Cloud: ${JSON.stringify(res)}`);
 
-    // In case you want to test your stuff locally directly against the SF instance
-    // const caseObj = JSON.stringify({
-    //     'CaseOrigin__c': 'Kafka Producer',
-    //     'Description__c': 'I have a question about a new product that you recently announced',
-    //     'Priority__c': 'High',
-    //     'Status__c': 'New',
-    //     'Subject__c': 'New product question.'
-    // });
-    
-    // conn.sobject('Case_Event__e').create(JSON.parse(caseObj), (err,ret) => {
-    //     if (err || !ret.success) { return console.error(err, ret); }
-    //     console.log("Created record id : " + ret.id);
-    // });
+    // Subscribe to messages coming FROM the SF platform
+    conn.streaming.topic("/event/case_event__e").subscribe((message) =>{
+        console.log('SF updated case: ' + JSON.stringify(message));
+        console.log('Publishing to Kafka....done');
+    });
 
 });
 
+// Send on that kafka message as a plat event
 const sendPlatEvent = (payload) => {
     console.log(`Sending ${payload} to service cloud`);
     conn.sobject('Case_Event__e').create(JSON.parse(payload), (err,ret) => {
@@ -67,8 +60,10 @@ const dataHandler = (messageSet, topic, partition) => {
     });
 };
 
+
+
 // listen to kafka
-return consumer.init().then(() => {
+consumer.init().then(() => {
     console.log('Consumer initiated');
 
     consumer.subscribe(`${process.env.KAFKA_PREFIX}${process.env.KAFKA_TOPIC}`, dataHandler);
