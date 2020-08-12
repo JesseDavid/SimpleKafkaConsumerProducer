@@ -34,7 +34,7 @@ conn.login(username, password, function(err, res) {
     console.log(`\nAuthenticated with Service Cloud: ${JSON.stringify(res)}`);
 
     // Subscribe to messages coming FROM the SF platform
-    conn.streaming.topic("/event/case_event__e").subscribe((message) =>{
+    conn.streaming.topic("/event/Case_Event_Outbound__e").subscribe((message) =>{
         console.log('SF updated case: ' + JSON.stringify(message));
         console.log('Publishing to Kafka....done');
     });
@@ -42,9 +42,12 @@ conn.login(username, password, function(err, res) {
 });
 
 // Send on that kafka message as a plat event
-const sendPlatEvent = (payload) => {
+const sendPlatEvent = (payload, offset) => {
     console.log(`Sending ${payload} to service cloud`);
-    conn.sobject('Case_Event__e').create(JSON.parse(payload), (err,ret) => {
+    let payloadObj = JSON.parse(payload);
+    payloadObj.KakfaOffset__c = offset;
+
+    conn.sobject('Case_Event_Inbound__e').create(JSON.parse(payload), (err,ret) => {
         if (err || !ret.success) { return console.error(err, ret); }
         console.log("Created record id : " + ret.id);
     });
@@ -53,9 +56,10 @@ const sendPlatEvent = (payload) => {
 // when we see a case kafka message...send it on down the line
 const dataHandler = (messageSet, topic, partition) => {
     messageSet.forEach(function (m) {
+        //TODO: if (Salesforce message...)
         console.log('Message Received:');
         console.log(topic, partition, m.offset, m.message.value.toString('utf8'));
-        sendPlatEvent(m.message.value);
+        sendPlatEvent(m.message.value, m.offset);
 
     });
 };

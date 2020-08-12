@@ -20,7 +20,8 @@ const refCaseObj = {
     'Description__c': 'I can\'t seem to log in to the portal',
     'Priority__c': 'Medium',
     'Status__c': 'New',
-    'Subject__c': 'Unable to connect.'
+    'Subject__c': 'Unable to connect.',
+    'Contact__c': 'Jordan Ramachandiran'
 };
 
 const produceMessage = (caseObj, topic) => {
@@ -53,7 +54,7 @@ producer.init().then(() => {
             value: JSON.stringify(refCaseObj)
         },
     }).then((result) => {
-        console.log(`Message sent: ${JSON.stringify(caseObj)}`);
+        console.log(`Message sent: ${JSON.stringify(refCaseObj)}`);
         console.log(result);
     });
 
