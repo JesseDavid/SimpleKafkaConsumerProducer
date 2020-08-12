@@ -43,9 +43,9 @@ conn.login(username, password, function(err, res) {
 
 // Send on that kafka message as a plat event
 const sendPlatEvent = (payload, offset) => {
-    console.log(`Sending ${payload} to service cloud`);
     let payloadObj = JSON.parse(payload);
     payloadObj.KakfaOffset__c = offset;
+    console.log(`Sending ${JSON.stringify(payloadObj)} to service cloud`);
 
     conn.sobject('Case_Event_Inbound__e').create(JSON.parse(payload), (err,ret) => {
         if (err || !ret.success) { return console.error(err, ret); }
