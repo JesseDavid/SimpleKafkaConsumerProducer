@@ -9,7 +9,7 @@ const producer = require('./producer');
 router.post('/case/inbound', async function(req, res, next) {
   
   console.log("Got case: " + JSON.stringify(req.body));
-  console.log("Got the case info....sending it to Salesforce");
+  console.log("Got the case info\n....sending it to Salesforce");
 
   producer.produceMessage(req.body);
   res.send(200);
@@ -19,7 +19,7 @@ router.post('/case/inbound', async function(req, res, next) {
 router.post('/case/outbound', async function(req, res, next) {
   
     console.log("Got case update from Salesforce: " + JSON.stringify(req.body));
-    console.log("Got the case info....adding it to the topic");
+    console.log("Got the case info\n....adding it to the topic");
 
     producer.produceMessage(req.body, process.env.SF_KAFKA_TOPIC)
     res.send(200);
