@@ -15,14 +15,14 @@ const producer = new Kafka.Producer({
     }
 });
 
-const refCaseObj = {
-    'CaseOrigin__c': 'Kafka Producer',
-    'Description__c': 'I can\'t seem to log in to the portal',
-    'Priority__c': 'Medium',
-    'Status__c': 'New',
-    'Subject__c': 'Unable to connect.',
-    'Contact__c': 'Jordan Ramachandiran'
-};
+// const refCaseObj = {
+//     'CaseOrigin__c': 'Kafka Producer',
+//     'Description__c': 'I can\'t seem to log in to the portal',
+//     'Priority__c': 'Medium',
+//     'Status__c': 'New',
+//     'Subject__c': 'Unable to connect.',
+//     'Contact__c': 'Jordan Ramachandiran'
+// };
 
 const produceMessage = (caseObj, topic) => {
     const topicSuffix = topic || process.env.KAFKA_TOPIC;
@@ -43,21 +43,6 @@ const produceMessage = (caseObj, topic) => {
 
 producer.init().then(() => {
     console.log('Producer Initiated');
-
-    console.log(`Sending to Kafka Topic : ${process.env.KAFKA_TOPIC}`);
-    console.log(`Message sent: ${JSON.stringify(refCaseObj)}`);
-
-    producer.send({
-        topic:`${process.env.KAFKA_PREFIX}${process.env.KAFKA_TOPIC}`,
-        partition:0,
-        message:{
-            value: JSON.stringify(refCaseObj)
-        },
-    }).then((result) => {
-        console.log(`Message sent: ${JSON.stringify(refCaseObj)}`);
-        console.log(result);
-    });
-
 });
 
 
