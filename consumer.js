@@ -49,14 +49,13 @@ const sendPlatEvent = (payload, offset) => {
 
     conn.sobject('Case_Event_Inbound__e').create(JSON.parse(payload), (err,ret) => {
         if (err || !ret.success) { return console.error(err, ret); }
-        console.log("Created record id : " + ret.id);
+        console.log("Created Platform Event with ID: " + ret.id);
     });
 };
 
 // when we see a case kafka message...send it on down the line
 const dataHandler = (messageSet, topic, partition) => {
     messageSet.forEach(function (m) {
-        //TODO: if (Salesforce message...)
         console.log('Message Received:');
         console.log(topic, partition, m.offset, m.message.value.toString('utf8'));
         sendPlatEvent(m.message.value, m.offset);
@@ -65,12 +64,11 @@ const dataHandler = (messageSet, topic, partition) => {
 };
 
 
-
 // listen to kafka
 consumer.init().then(() => {
-    console.log('Consumer initiated');
+    console.log('Kafka Consumer initiated');
 
     consumer.subscribe(`${process.env.KAFKA_PREFIX}${process.env.KAFKA_TOPIC}`, dataHandler);
 
-    console.log('Consumer subscribed');
+    console.log('Kafka Consumer subscribed');
 });
