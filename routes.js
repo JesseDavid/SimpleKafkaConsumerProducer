@@ -2,13 +2,9 @@ const express = require('express');
 const router = express.Router();
 const producer = require('./producer');
 
-/**
- * Receives run information from the MatLab server, parses it, and inserts
- * into the database that is synced with Salesforce
- */
-router.post('/case/inbound', async function(req, res, next) {
+router.post('/inbound', async function(req, res) {
   
-  console.log("Got case: " + JSON.stringify(req.body));
+  console.log("Got api message: " + JSON.stringify(req.body));
   console.log("Got the case info\n....sending it to Salesforce");
 
   producer.produceMessage(req.body);
@@ -16,12 +12,12 @@ router.post('/case/inbound', async function(req, res, next) {
 
 });
 
-router.post('/case/outbound', async function(req, res, next) {
+router.post('/outbound', async function(req, res) {
   
-    console.log("Got case update from Salesforce: " + JSON.stringify(req.body));
-    console.log("Got the case info\n....adding it to the topic");
+    console.log("Got api update from Salesforce: " + JSON.stringify(req.body));
+    console.log("Got update\n....adding it to the topic");
 
-    producer.produceMessage(req.body, process.env.SF_KAFKA_TOPIC)
+    producer.produceMessage(req.body);
     res.send(200);
 });
 

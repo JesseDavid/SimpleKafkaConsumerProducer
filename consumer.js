@@ -1,4 +1,3 @@
-//Yer standard includes. Nforce for SF Auth, Faye for cometD, no-kafka for yes-kafka, and fs for a thing.
 const jsforce = require('jsforce');
 const fs = require('fs');
 const Kafka = require('no-kafka');
@@ -35,8 +34,8 @@ conn.login(username, password, function(err, res) {
 
     // Subscribe to messages coming FROM the SF platform
     conn.streaming.topic("/event/Case_Event_Outbound__e").subscribe((message) =>{
-        console.log('SF updated case: ' + JSON.stringify(message));
-        console.log('Publishing to Kafka....done');
+        console.log('\n\nSF updated case: ' + JSON.stringify(message));
+        console.log('Publishing to Kafka\n....done');
     });
 
 });
@@ -56,7 +55,7 @@ const sendPlatEvent = (payload, offset) => {
 // when we see a case kafka message...send it on down the line
 const dataHandler = (messageSet, topic, partition) => {
     messageSet.forEach(function (m) {
-        console.log('Message Received:');
+        console.log(`Processing message on ${topic} topic`);
         console.log(topic, partition, m.offset, m.message.value.toString('utf8'));
         sendPlatEvent(m.message.value, m.offset);
 
@@ -68,7 +67,7 @@ const dataHandler = (messageSet, topic, partition) => {
 consumer.init().then(() => {
     console.log('Kafka Consumer initiated');
 
-    consumer.subscribe(`${process.env.KAFKA_PREFIX}${process.env.KAFKA_TOPIC}`, dataHandler);
+    consumer.subscribe(`${process.env.KAFKA_PREFIX}${process.env.KAFKA_SUBSCRIBE_TOPIC}`, dataHandler);
 
     console.log('Kafka Consumer subscribed');
 });
