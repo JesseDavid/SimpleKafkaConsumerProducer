@@ -26,6 +26,8 @@ const conn = new jsforce.Connection({
     loginUrl : process.env.SF_LOGIN_URL
 });
 const changeSubscribeTopic = process.env.OUTBOUND_TOPIC;
+const sfEventBusUrl = proces.env.SF_EVENT_BUS_URL;
+const sfInboundEventName = process.env.SF_INBOUND_EVENT_NAME;
 
 /// 1: connect to the SF org
 console.log('Authenticating with Service Cloud...');
@@ -42,7 +44,7 @@ conn.login(username, password, function(err, res) {
         await producerListen();
 
         // 4: Subscribe to messages coming FROM the SF platform on the OUTBOUND_TOPIC topic
-        conn.streaming.topic("/event/Case_Event_Outbound__e").subscribe((message) =>{
+        conn.streaming.topic(sfEventBusUrl).subscribe((message) =>{
             console.log('\n\nSF updated case: ' + JSON.stringify(message));
             console.log('Publishing to Kafka...');
             producer.produceMessage(message, changeSubscribeTopic);
@@ -57,7 +59,7 @@ const sendPlatEvent = (payload, offset) => {
     payloadObj.KakfaOffset__c = offset;
     console.log(`Sending ${JSON.stringify(payloadObj)} to service cloud`);
 
-    conn.sobject('Case_Event_Inbound__e').create(JSON.parse(payload), (err,ret) => {
+    conn.sobject(sfInboundEventName).create(JSON.parse(payload), (err,ret) => {
         if (err || !ret.success) { return console.error(err, ret); }
         console.log("Created Platform Event with ID: " + ret.id);
     });
