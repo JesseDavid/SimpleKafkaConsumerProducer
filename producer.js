@@ -23,18 +23,18 @@ const producer = new Kafka.Producer({
 // };
 
 const produceMessage = (caseObj, topic) => {
-    const produceTopicName = topic || process.env.KAFKA_PRODUCE_TOPIC;
+    const produceTopicName = topic || process.env.INBOUND_TOPIC;
     
     producer
         .send({
-                topic:`${produceTopicName}`,
+                topic:`${process.env.KAFKA_PREFIX}${produceTopicName}`,
                 partition: 0,
                 message:{
                     value: JSON.stringify(caseObj)
                 },
             })
         .then((result) => {
-            console.log(`Published to ${produceTopicName} topic`);
+            console.log(`Published to ${process.env.KAFKA_PREFIX}${produceTopicName} topic`);
             console.log(`Message sent: ${JSON.stringify(caseObj)}`);
             console.log(`Result: ${JSON.stringify(result)}`);
         });

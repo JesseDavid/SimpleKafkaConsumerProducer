@@ -25,7 +25,7 @@ const password = process.env.SF_API_PASSWORD;
 const conn = new jsforce.Connection({
     loginUrl : process.env.SF_LOGIN_URL
 });
-const changeSubscribeTopic = process.env.KAFKA_SUBSCRIBE_TOPIC;
+const changeSubscribeTopic = process.env.OUTBOUND_TOPIC;
 
 /// 1: connect to the SF org
 console.log('Authenticating with Service Cloud...');
@@ -37,11 +37,11 @@ conn.login(username, password, function(err, res) {
 
     // 2: Initialize the producer
     consumer.init().then(() => {
-        // 3: listen to any messages the producer process has put on our "KAFKA_PRODUCE_TOPIC" topic,
+        // 3: listen to any messages the producer process has put on our "INBOUND_TOPIC" topic,
         // and send them over to Salesforce
         await producerListen();
 
-        // 4: Subscribe to messages coming FROM the SF platform
+        // 4: Subscribe to messages coming FROM the SF platform on the OUTBOUND_TOPIC topic
         conn.streaming.topic("/event/Case_Event_Outbound__e").subscribe((message) =>{
             console.log('\n\nSF updated case: ' + JSON.stringify(message));
             console.log('Publishing to Kafka...');
@@ -63,8 +63,8 @@ const sendPlatEvent = (payload, offset) => {
     });
 };
 
-// When we see a kafka message on the KAFKA_PRODUCE_TOPIC, send it to Salesforce
-const dataHandler = (messageSet, topic, partition) => {
+// When we see a kafka message on the INBOUND_TOPIC, send it to Salesforce
+const inboundDataHandler = (messageSet, topic, partition) => {
     messageSet.forEach(function (m) {
         console.log(`Processing message on ${topic} topic`);
         console.log(topic, partition, m.offset, m.message.value.toString('utf8'));
@@ -72,10 +72,11 @@ const dataHandler = (messageSet, topic, partition) => {
     });
 };
 
+// Actually get this Kafka producer up and running
 const producerListen = () => {
     console.log('Kafka Consumer initiated');
 
-    return consumer.subscribe(`${process.env.KAFKA_PREFIX}${process.env.KAFKA_PRODUCE_TOPIC}`, dataHandler)
+    return consumer.subscribe(`${process.env.KAFKA_PREFIX}${process.env.INBOUND_TOPIC}`, inboundDataHandler)
         .then(() =>{
             console.log('Kafka Consumer subscribed');
             return;
