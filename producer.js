@@ -36,7 +36,7 @@ const produceMessage = (caseObj, topic) => {
         .then((result) => {
             console.log(`Published to ${produceTopicName} topic`);
             console.log(`Message sent: ${JSON.stringify(caseObj)}`);
-            console.log(`Result: ${result}`);
+            console.log(`Result: ${JSON.stringify(result)}`);
         });
 };
 

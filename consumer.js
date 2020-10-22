@@ -1,3 +1,5 @@
+const producer = require('./producer');
+
 const jsforce = require('jsforce');
 const fs = require('fs');
 const Kafka = require('no-kafka');
@@ -23,8 +25,9 @@ const password = process.env.SF_API_PASSWORD;
 const conn = new jsforce.Connection({
     loginUrl : process.env.SF_LOGIN_URL
 });
+const changeSubscribeTopic = process.env.KAFKA_SUBSCRIBE_TOPIC;
 
-/// connect to the SF org
+/// 1: connect to the SF org
 console.log('Authenticating with Service Cloud...');
 conn.login(username, password, function(err, res) {
     if (err) {
@@ -32,10 +35,18 @@ conn.login(username, password, function(err, res) {
     }
     console.log(`\nAuthenticated with Service Cloud: ${JSON.stringify(res)}`);
 
-    // Subscribe to messages coming FROM the SF platform
-    conn.streaming.topic("/event/Case_Event_Outbound__e").subscribe((message) =>{
-        console.log('\n\nSF updated case: ' + JSON.stringify(message));
-        console.log('Publishing to Kafka\n....done');
+    // 2: Initialize the producer
+    consumer.init().then(() => {
+        // 3: listen to any messages the producer process has put on our "KAFKA_PRODUCE_TOPIC" topic,
+        // and send them over to Salesforce
+        await producerListen();
+
+        // 4: Subscribe to messages coming FROM the SF platform
+        conn.streaming.topic("/event/Case_Event_Outbound__e").subscribe((message) =>{
+            console.log('\n\nSF updated case: ' + JSON.stringify(message));
+            console.log('Publishing to Kafka...');
+            producer.produceMessage(message, changeSubscribeTopic);
+        });
     });
 
 });
@@ -52,22 +63,23 @@ const sendPlatEvent = (payload, offset) => {
     });
 };
 
-// when we see a case kafka message...send it on down the line
+// When we see a kafka message on the KAFKA_PRODUCE_TOPIC, send it to Salesforce
 const dataHandler = (messageSet, topic, partition) => {
     messageSet.forEach(function (m) {
         console.log(`Processing message on ${topic} topic`);
         console.log(topic, partition, m.offset, m.message.value.toString('utf8'));
         sendPlatEvent(m.message.value, m.offset);
-
     });
 };
 
-
-// listen to kafka
-consumer.init().then(() => {
+const producerListen = () => {
     console.log('Kafka Consumer initiated');
 
-    consumer.subscribe(`${process.env.KAFKA_PREFIX}${process.env.KAFKA_SUBSCRIBE_TOPIC}`, dataHandler);
+    return consumer.subscribe(`${process.env.KAFKA_PREFIX}${process.env.KAFKA_PRODUCE_TOPIC}`, dataHandler)
+        .then(() =>{
+            console.log('Kafka Consumer subscribed');
+            return;
+        });
+};
 
-    console.log('Kafka Consumer subscribed');
-});
+
