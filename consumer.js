@@ -57,10 +57,10 @@ conn.login(username, password, function(err, res) {
 const sendPlatEvent = (payload, offset) => {
     let payloadObj = JSON.parse(payload);
     payloadObj.KakfaOffset__c = offset;
-    console.log(`Sending ${JSON.stringify(payloadObj)} to service cloud`);
+    console.log(`Sending ${JSON.stringify(payloadObj)} to Salesforce Event Bus: ${sfInboundEventName}`);
 
     conn.sobject(sfInboundEventName).create(JSON.parse(payload), (err,ret) => {
-        if (err || !ret.success) { return console.error(err, ret); }
+        if (err || !ret.success) { return console.error(`ERROR ${err}`, ret); }
         console.log("Created Platform Event with ID: " + ret.id);
     });
 };
