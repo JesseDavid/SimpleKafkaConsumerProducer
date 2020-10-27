@@ -26,7 +26,7 @@ const conn = new jsforce.Connection({
     loginUrl : process.env.SF_LOGIN_URL
 });
 const changeSubscribeTopic = process.env.OUTBOUND_TOPIC;
-const sfEventBusUrl = proces.env.SF_EVENT_BUS_URL;
+const sfEventBusUrl = process.env.SF_EVENT_BUS_URL;
 const sfInboundEventName = process.env.SF_INBOUND_EVENT_NAME;
 
 /// 1: connect to the SF org
@@ -75,7 +75,7 @@ const inboundDataHandler = (messageSet, topic, partition) => {
 };
 
 // Actually get this Kafka producer up and running
-const producerListen = async () => {
+const producerListen = () => {
     console.log('Kafka Consumer initiated');
 
     return consumer.subscribe(`${process.env.KAFKA_PREFIX}${process.env.INBOUND_TOPIC}`, inboundDataHandler)
