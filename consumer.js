@@ -41,13 +41,13 @@ conn.login(username, password, function(err, res) {
     consumer.init().then(() => {
         // 3: listen to any messages the producer process has put on our "INBOUND_TOPIC" topic,
         // and send them over to Salesforce
-        await producerListen();
-
-        // 4: Subscribe to messages coming FROM the SF platform on the OUTBOUND_TOPIC topic
-        conn.streaming.topic(sfEventBusUrl).subscribe((message) =>{
-            console.log('\n\nSF updated case: ' + JSON.stringify(message));
-            console.log('Publishing to Kafka...');
-            producer.produceMessage(message, changeSubscribeTopic);
+        producerListen().then(() => {
+            // 4: Subscribe to messages coming FROM the SF platform on the OUTBOUND_TOPIC topic
+            conn.streaming.topic(sfEventBusUrl).subscribe((message) =>{
+                console.log('\n\nSF updated case: ' + JSON.stringify(message));
+                console.log('Publishing to Kafka...');
+                producer.produceMessage(message, changeSubscribeTopic);
+            });
         });
     });
 
