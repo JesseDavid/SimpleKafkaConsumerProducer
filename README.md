@@ -1,4 +1,4 @@
-# This is a dead-simple Kafka Producer
+# This is a dead-simple Kafka & SF Platform Events Consumer & Producer
 
 Goal of this is to be able to hook up a code repo via github to Heroku, deploy a Kafka cluster there, hit deploy, set up a Salesforce Connected app, and start pumping messages in. 
 
@@ -71,7 +71,7 @@ The "having a platform event generate a new message in Kafka" service works by:
 
 **SF_API_PASSWORD** Password from the Salesforce connected app
 
-**SF_LOGIN_URL** Salesforce login url (usually https://login.salesforce.com)
+**SF_LOGIN_URL** Salesforce login url (usually `https://login.salesforce.com`)
 
 **INBOUND_TOPIC** The topic name a message coming from an external (non SF) system will publish to. This is the topic a subscriber will listen to to push messages into Salesforce. Think of it holding all the information on External -> Kafka -> SF messages.
 

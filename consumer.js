@@ -30,12 +30,12 @@ const sfEventBusUrl = proces.env.SF_EVENT_BUS_URL;
 const sfInboundEventName = process.env.SF_INBOUND_EVENT_NAME;
 
 /// 1: connect to the SF org
-console.log('Authenticating with Service Cloud...');
+console.log('Consumer Authenticating with Salesforce...');
 conn.login(username, password, function(err, res) {
     if (err) {
         return console.error(err);
     }
-    console.log(`\nAuthenticated with Service Cloud: ${JSON.stringify(res)}`);
+    console.log(`\nConsumer Authenticated with Salesforce: ${JSON.stringify(res)}`);
 
     // 2: Initialize the producer
     consumer.init().then(() => {
@@ -75,7 +75,7 @@ const inboundDataHandler = (messageSet, topic, partition) => {
 };
 
 // Actually get this Kafka producer up and running
-const producerListen = () => {
+const producerListen = async () => {
     console.log('Kafka Consumer initiated');
 
     return consumer.subscribe(`${process.env.KAFKA_PREFIX}${process.env.INBOUND_TOPIC}`, inboundDataHandler)
