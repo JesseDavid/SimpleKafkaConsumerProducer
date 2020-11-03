@@ -35,8 +35,8 @@ const produceMessage = (caseObj, topic) => {
             })
         .then((result) => {
             console.log(`Published to ${process.env.KAFKA_PREFIX}${produceTopicName} topic`);
-            console.log(`Message sent: ${JSON.stringify(caseObj)}`);
-            console.log(`Result: ${JSON.stringify(result)}`);
+            console.log(`Message sent: ${JSON.stringify(caseObj, null, 4)}`);
+            console.log(`Result: ${JSON.stringify(result, null, 4)}`);
         });
 };
 
