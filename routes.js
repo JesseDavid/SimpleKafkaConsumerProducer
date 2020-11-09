@@ -20,7 +20,6 @@ var oauth2 = new jsforce.OAuth2({
 router.post('/inbound', async function(req, res) {
   
   console.log("Got api message: " + JSON.stringify(req.body));
-  console.log("Got the case info\n....sending it to Salesforce");
 
   producer.produceMessage(req.body, inboundTopic);
   res.send(200);

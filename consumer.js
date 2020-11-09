@@ -47,7 +47,7 @@ conn.login(username, password, function(err, res) {
             // 4: Subscribe to messages coming FROM the SF platform on the OUTBOUND_TOPIC topic
             // /event/IA_AccountEvent_Outbound__e
             conn.streaming.topic(sfEventBusUrl).subscribe((message) =>{
-                console.log('\n\nSF updated case: ' + JSON.stringify(message, null, 4));
+                console.log('\n\nSF updated object: ' + JSON.stringify(message, null, 4));
                 console.log('Publishing to Kafka...');
                 producer.produceMessage(message, changeSubscribeTopic);
             });
@@ -55,24 +55,25 @@ conn.login(username, password, function(err, res) {
     });
 });
 
-// Send on that kafka message as a plat event
-const sendPlatEvent = (payload, offset) => {
-    let payloadObj = JSON.parse(payload);
-    payloadObj.KakfaOffset__c = offset;
-    console.log(`Sending ${JSON.stringify(payloadObj, null, 4)} \n to Salesforce Event Bus: ${sfInboundEventName}`);
-
-    conn.sobject(sfInboundEventName).create(JSON.parse(payload), (err,ret) => {
-        if (err || !ret.success) { return console.error(`ERROR ${err}`, ret); }
-        console.log("Created Platform Event with ID: " + ret.id);
-    });
-};
-
 // When we see a kafka message on the INBOUND_TOPIC, send it to Salesforce
 const inboundDataHandler = (messageSet, topic, partition) => {
     messageSet.forEach(function (m) {
         console.log(`Processing message on ${topic} topic`);
         console.log(topic, partition, m.offset, m.message.value.toString('utf8'));
         sendPlatEvent(m.message.value, m.offset);
+    });
+};
+
+// Send on that kafka message as a plat event
+const sendPlatEvent = (payload, offset) => {
+    let payloadObj = JSON.parse(payload);
+    payloadObj.KakfaOffset__c = offset;
+    console.log(`Sending ${JSON.stringify(payloadObj, null, 4)} \n to Salesforce Event Bus: ${sfInboundEventName}`);
+
+    // Wrapper for API callout to create Salesforce Platform Event
+    conn.sobject(sfInboundEventName).create(JSON.parse(payload), (err,ret) => {
+        if (err || !ret.success) { return console.error(`ERROR ${err}`, ret); }
+        console.log("Created Platform Event with ID: " + ret.id);
     });
 };
 
