@@ -19,20 +19,20 @@ var oauth2 = new jsforce.OAuth2({
 
 router.post('/inbound', async function(req, res) {
   
-  console.log("Got api message: " + JSON.stringify(req.body));
+  console.log("Got api message: " + JSON.stringify(req.body, null, 4));
 
   producer.produceMessage(req.body, inboundTopic);
-  res.send(200);
+  res.sendStatus(200);
 
 });
 
 router.post('/outbound', async function(req, res) {
   
-    console.log("Got api update from Salesforce: " + JSON.stringify(req.body));
+    console.log("Got api update from Salesforce: " + JSON.stringify(req.body, null, 4));
     console.log("Got update\n....adding it to the topic");
 
     producer.produceMessage(req.body, outboundTopic);
-    res.send(200);
+    res.sendStatus(200);
 });
 
 router.get('/oauth2/callback', function(req, res) {
@@ -48,7 +48,7 @@ router.get('/oauth2/callback', function(req, res) {
     console.log("User ID: " + userInfo.id);
     console.log("Org ID: " + userInfo.organizationId);
     // ...
-    res.send('success'); // or your desired response
+    res.sendStatus('success'); // or your desired response
   });
 });
 

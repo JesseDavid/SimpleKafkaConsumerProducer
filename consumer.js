@@ -71,6 +71,7 @@ const sendPlatEvent = (payload, offset) => {
     console.log(`Sending ${JSON.stringify(payloadObj, null, 4)} \n to Salesforce Event Bus: ${sfInboundEventName}`);
 
     // Wrapper for API callout to create Salesforce Platform Event
+    // POST https://login.salesforce.com/services/data/v50.0/sobjects/Event_Name__e/
     conn.sobject(sfInboundEventName).create(JSON.parse(payload), (err,ret) => {
         if (err || !ret.success) { return console.error(`ERROR ${err}`, ret); }
         console.log("Created Platform Event with ID: " + ret.id);
