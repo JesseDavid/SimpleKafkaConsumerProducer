@@ -58,8 +58,8 @@ conn.login(username, password, function(err, res) {
 // When we see a kafka message on the INBOUND_TOPIC, send it to Salesforce
 const inboundDataHandler = (messageSet, topic, partition) => {
     messageSet.forEach(function (m) {
-        console.log(`Processing message on ${topic} topic`);
-        console.log(topic, partition, m.offset, m.message.value.toString('utf8'));
+        console.log(`Processing message ${m.offset} on ${topic} topic...`);
+        //console.log(topic, partition, m.offset, m.message.value.toString('utf8'));
         sendPlatEvent(m.message.value, m.offset);
     });
 };
@@ -68,7 +68,7 @@ const inboundDataHandler = (messageSet, topic, partition) => {
 const sendPlatEvent = (payload, offset) => {
     let payloadObj = JSON.parse(payload);
     payloadObj.KakfaOffset__c = offset;
-    console.log(`Sending ${JSON.stringify(payloadObj, null, 4)} \n to Salesforce Event Bus: ${sfInboundEventName}`);
+    console.log(`Sending ${JSON.stringify(payloadObj, null, 4)} \n to Salesforce Event Bus: ${sfInboundEventName}...`);
 
     // Wrapper for API callout to create Salesforce Platform Event
     // POST https://login.salesforce.com/services/data/v50.0/sobjects/Event_Name__e/
