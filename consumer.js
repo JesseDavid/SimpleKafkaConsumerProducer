@@ -45,7 +45,8 @@ conn.login(username, password, function(err, res) {
         // and send them over to Salesforce
         producerListen().then(() => {
             // 4: Subscribe to messages coming FROM the SF platform on the OUTBOUND_TOPIC topic
-            // /event/IA_AccountEvent_Outbound__e
+            // /eventAccountEvent_Outbound__e
+            console.log(`Subscribing to ${sfEventBusUrl} stream...`);
             conn.streaming.topic(sfEventBusUrl).subscribe((message) =>{
                 console.log('\n\nSF updated object: ' + JSON.stringify(message, null, 4));
                 console.log('Publishing to Kafka...');
